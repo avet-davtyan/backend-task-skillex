@@ -30,8 +30,6 @@ class ItemStoreGetService {
   async getItemByPrefixAndTypeId(connection, options) {
       const { prefix, typeId } = options;
 
-      console.log(typeof typeId);
-      
       let query = 'SELECT * FROM items';
       const conditions = [];
       const values = [];
@@ -50,8 +48,6 @@ class ItemStoreGetService {
           query += ' WHERE ' + conditions.join(' AND ');
       }
 
-      console.log(query, values);
-  
       const [result] = await connection.query(query, values);
       return result;
   }
@@ -71,8 +67,6 @@ class ItemStoreGetService {
     let query = 'SELECT * FROM items WHERE ';
     const conditions = [];
     const values = [];
-
-    console.log(inputArrayTypeIds);
 
     inputArrayTypeIds.forEach((typeId, index) => {
       const prefix = String.fromCharCode(65 + index); 

@@ -36,7 +36,5 @@ export async function initializeTables() {
   } catch (err) {
     await connection.rollback();
     throw err;
-  } finally {
-    await connection.end();
   }
 }

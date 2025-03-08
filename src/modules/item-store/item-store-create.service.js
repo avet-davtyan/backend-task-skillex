@@ -27,6 +27,20 @@ class ItemStoreCreateService {
 
         return result;
     }
+
+    async createItemManyQuery(
+        connection,
+        optionsArray,
+    ) {
+        const values = optionsArray.map(({ typeId, prefix }) => [typeId, prefix]);
+    
+        const [result] = await connection.query(
+            'INSERT INTO items (type_id, prefix) VALUES ?',
+            [values]
+        );
+    
+        return result;
+    }
 }
 
 export default ItemStoreCreateService;

@@ -6,6 +6,7 @@ import {
 import ItemStoreCreateService from "./modules/item-store/item-store-create.service.js";
 import { getConnection } from './db/connection.js';
 import ItemStoreGetService from './modules/item-store/item-store-get.service.js';
+import CombinationService from './modules/combination/combination.service.js';
 
 dotenv.config();
 
@@ -34,8 +35,6 @@ app.post('/generate-item', async (req, res) => {
   } catch (error) {
     console.error("Error generating item", error);
     res.status(500).json({ error: 'Failed to generate item' });
-  } finally {
-    connection.end();
   }
 })
 
@@ -53,8 +52,6 @@ app.get('/items/:id', async (req, res) => {
   } catch (error) {
     console.error("Error fetching item", error);
     res.status(500).json({ error: 'Failed to fetch item' });
-  } finally {
-    connection.end();
   }
 });
 
@@ -72,33 +69,80 @@ app.get('/get-items/', async (req, res) => {
   } catch (error) {
     console.error("Error fetching item", error);
     res.status(500).json({ error: 'Failed to fetch item' });
-  } finally {
-    connection.end();
   }
 });
 
 
-app.post('/generate', async (req, res) => {
+app.post('/generate-v2', async (req, res) => {
   const{
     inputArray,
+    length,
   } = req.body;
 
   const connection = await getConnection();
 
   try {
     const itemStoreGetService = ItemStoreGetService.getInstance();
+    const itemStoreCreateService = ItemStoreCreateService.getInstance();
+
     await connection.beginTransaction();
-    const items = await itemStoreGetService.getItemsByInputArrayTypeIds(connection, inputArray);
+    const existingItems = await itemStoreGetService.getItemsByInputArrayTypeIds(connection, inputArray);
+
+    const allItems = [];
+    const missingItems = [];
+    for (let i = 0; i < inputArray.length; i++) {
+      const prefix = String.fromCharCode(65 + i);
+      const currentMaxTypeId = inputArray[i];
+      const itemGroup = [];
+      for (let typeId = 1; typeId <= currentMaxTypeId; typeId++) {
+        if (existingItems.find(item => item.type_id === typeId && item.prefix === prefix) === undefined) {
+          missingItems.push({ prefix, typeId });
+        }
+        itemGroup.push(prefix + typeId);
+      }
+      allItems.push(itemGroup);
+    }
+
+    if (missingItems.length !== 0) {
+      await itemStoreCreateService.createItemManyQuery(connection, missingItems);
+    }
     await connection.commit();
 
-    res.json(items);
+    const combination = [];
+    function combine(arr, index, res) {
+      if (arr.length === length) {
+        res.push(arr);
+        return;
+      }
+  
+      for (let i = index; i < allItems.length; i++) {
+        for (let j = 0; j < allItems[i].length; j++) {
+          combine([...arr, allItems[i][j]], i + 1, res);
+        }
+      }
+    }
+  
+    combine([], 0, combination);
+
+    res.json(combination);
   } catch (error) {
     console.error("Error fetching item", error);
     res.status(500).json({ error: 'Failed to fetch item' });
-  } finally {
-    connection.end();
-  }
+  } 
 });
+
+
+
+
+
+
+
+app.post("/generate", async (req, res) => {
+  const combinationService = CombinationService.getInstance();
+  const combination = await combinationService.generateAndSaveCombination(req.body);
+
+  res.json(combination);
+})
 
 const startServer = async () => {
   try {
