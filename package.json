@@ -1,7 +1,7 @@
 {
   "name": "backend-task-skillex",
   "version": "1.0.0",
-  "description": "A simple Express.js project",
+  "description": "Simple Express.js app that generates all possible combinations of items and stores them in a database.",
   "main": "src/app.js",
   "type": "module",
   "scripts": {

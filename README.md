@@ -1,6 +1,6 @@
-# Express.js Project
+# Backend Task - Skilllex
 
-A simple Express.js project with basic setup.
+Simple Express.js app that generates all possible combinations of items and stores them in a database.
 
 ## Setup
 
@@ -27,9 +27,11 @@ A simple Express.js project with basic setup.
 ## Environment Variables
 
 - `PORT`: The port number for the server (default: 3000)
+- `MYSQL_DATABASE`: The name of the database (default: skillex_db)
+- `MYSQL_USER`: The username for the database (default: skillex_user)
+- `MYSQL_PASSWORD`: The password for the database (default: skillex_password)
+- `MYSQL_ROOT_PASSWORD`: The root password for the database (default: root_password)
 
 ## Available Endpoints
 
-- GET `/`: Returns a welcome message
-
-The server runs on `http://localhost:${PORT}`
+- POST `/generate`: Generates a combination of items and stores it in the database
