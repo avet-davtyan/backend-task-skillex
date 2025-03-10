@@ -5,7 +5,7 @@ class ItemStoreCreateService {
    */
   static instance = null;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * @returns {ItemStoreCreateService}
@@ -16,7 +16,7 @@ class ItemStoreCreateService {
     }
     return ItemStoreCreateService.instance;
   }
-    
+
   /**
    * @typedef {Object} CreateItemOptions
    * @property {number} typeId
@@ -36,8 +36,8 @@ class ItemStoreCreateService {
    * @returns {Promise<ItemQueryResult>}
    */
   async createItemQuery(
-      connection,
-      options,
+    connection,
+    options,
   ) {
     const {
       typeId,
@@ -66,14 +66,14 @@ class ItemStoreCreateService {
     connection,
     optionsArray,
   ) {
-    if(optionsArray.length === 0) {
+    if (optionsArray.length === 0) {
       return null;
     }
 
     const values = optionsArray.map(({ typeId, prefix }) => [typeId, prefix]);
     await connection.query(
-        "INSERT INTO items (type_id, prefix) VALUES ?",
-        [values]
+      "INSERT INTO items (type_id, prefix) VALUES ?",
+      [values]
     );
 
     return null;

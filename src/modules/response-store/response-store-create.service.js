@@ -5,7 +5,7 @@ class ResponseStoreCreateService {
    */
   static instance = null;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * @returns {ResponseStoreCreateService}
@@ -16,7 +16,7 @@ class ResponseStoreCreateService {
     }
     return ResponseStoreCreateService.instance;
   }
-    
+
   /**
    * @typedef {Object} RequestData
    * @property {Array<number>} inputArray

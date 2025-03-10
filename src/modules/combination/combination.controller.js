@@ -42,11 +42,11 @@ function validateRequestBodyForCombinationGeneration(requestBody) {
     length,
   } = requestBody;
 
-  if( length > inputArray.length) {
+  if (length > inputArray.length) {
     throw new Error("Length cannot be greater than the length of the input array");
   }
 
-  if(inputArray.length > 26){
+  if (inputArray.length > 26) {
     throw new Error("Input array length cannot be greater than 26");
   }
 }

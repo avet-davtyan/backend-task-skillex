@@ -5,7 +5,7 @@ class CombinationStoreCreateService {
    */
   static instance = null;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * @returns {CombinationStoreCreateService}

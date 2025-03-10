@@ -1,4 +1,4 @@
-export function validateEnvVariables(){
+export function validateEnvVariables() {
   const requiredEnvVariables = [
     "PORT",
     "MYSQL_HOST",
@@ -10,8 +10,8 @@ export function validateEnvVariables(){
   const missingEnvVariables =
     requiredEnvVariables
       .filter(variableName => !process.env[variableName]);
-  
-  if(missingEnvVariables.length > 0) {
+
+  if (missingEnvVariables.length > 0) {
     throw new Error(`Missing ENV variables: ${missingEnvVariables.join(", ")}`);
   }
 }

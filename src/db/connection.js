@@ -11,7 +11,7 @@ let connection = null;
 export async function getConnection() {
 
   try {
-    if(!connection) {
+    if (!connection) {
       connection = await mysql.createConnection({
         host: process.env.MYSQL_HOST,
         port: process.env.MYSQL_PORT,
@@ -20,7 +20,7 @@ export async function getConnection() {
         database: process.env.MYSQL_DATABASE
       });
     }
-    
+
     return connection;
   } catch (error) {
     console.error("getConnection", error);

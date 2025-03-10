@@ -5,7 +5,7 @@ class ItemStoreGetService {
    */
   static instance = null;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * @returns {ItemStoreGetService}
@@ -34,7 +34,7 @@ class ItemStoreGetService {
       "SELECT * FROM items WHERE id = ?",
       [itemId]
     );
-  
+
     return result;
   }
 
@@ -55,17 +55,17 @@ class ItemStoreGetService {
     let query = "SELECT * FROM items";
     const conditions = [];
     const values = [];
-  
+
     if (prefix !== undefined) {
       conditions.push("prefix = ?");
       values.push(prefix);
     }
-  
+
     if (typeId !== undefined) {
       conditions.push("type_id = ?");
       values.push(typeId);
     }
-  
+
     if (conditions.length > 0) {
       query += " WHERE " + conditions.join(" AND ");
     }
@@ -89,7 +89,7 @@ class ItemStoreGetService {
     const values = [];
 
     inputArrayTypeIds.forEach((typeId, index) => {
-      const prefix = String.fromCharCode(65 + index); 
+      const prefix = String.fromCharCode(65 + index);
 
       conditions.push(`(prefix = ? AND type_id <= ?)`);
       values.push(prefix, typeId);

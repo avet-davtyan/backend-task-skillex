@@ -84,7 +84,7 @@ class CombinationService {
       inputArray,
       length,
     } = options;
-  
+
     const connection = await getConnection();
 
     try {
@@ -116,7 +116,7 @@ class CombinationService {
         await this.combinationStoreCreateService
           .createCombinationQuery(
             connection,
-            {combinationList},
+            { combinationList },
           )
       await this.responseStoreCreateService
         .createResponseQuery(
@@ -126,7 +126,7 @@ class CombinationService {
             combinationId: createdCombinationList.id,
           }
         );
-      await connection.commit();  
+      await connection.commit();
 
       return {
         id: createdCombinationList.insertId,
@@ -165,7 +165,7 @@ class CombinationService {
    */
   loadCombinationGenerationAssets(
     options,
-  ){
+  ) {
 
     const {
       inputArray,
@@ -185,8 +185,8 @@ class CombinationService {
         if (
           existingItems.find(
             item => item.type_id === typeId &&
-            item.prefix === prefix) === undefined
-          ) {
+              item.prefix === prefix) === undefined
+        ) {
           missingItems.push({ prefix, typeId });
         }
         itemGroup.push(prefix + typeId);
