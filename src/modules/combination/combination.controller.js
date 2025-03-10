@@ -1,5 +1,7 @@
 import CombinationService from "./combination.service.js";
 
+const combinationService = CombinationService.getInstance();
+
 /**
  * @typedef {Object} GenerateCombinationRequestBody
  * @property {number[]} inputArray
@@ -16,8 +18,6 @@ import CombinationService from "./combination.service.js";
 async function generateCombination(req, res) {
   try {
     validateRequestBodyForCombinationGeneration(req.body);
-
-    const combinationService = CombinationService.getInstance();
     const combination = await combinationService.generateAndSaveCombination(req.body);
     res.json(combination);
   } catch (error) {
@@ -29,8 +29,12 @@ async function generateCombination(req, res) {
  * @param {GenerateCombinationRequestBody} requestBody
  */
 function validateRequestBodyForCombinationGeneration(requestBody) {
-  if (!requestBody || !requestBody.inputArray || !requestBody.length) {
-    throw new Error('Invalid request body');
+  if (
+    !requestBody ||
+    !requestBody.inputArray ||
+    !requestBody.length
+  ) {
+    throw new Error("Invalid request body");
   }
 
   const {
@@ -39,11 +43,11 @@ function validateRequestBodyForCombinationGeneration(requestBody) {
   } = requestBody;
 
   if( length > inputArray.length) {
-    throw new Error('Length cannot be greater than the length of the input array');
+    throw new Error("Length cannot be greater than the length of the input array");
   }
 
   if(inputArray.length > 26){
-    throw new Error('Input array length cannot be greater than 26');
+    throw new Error("Input array length cannot be greater than 26");
   }
 }
 

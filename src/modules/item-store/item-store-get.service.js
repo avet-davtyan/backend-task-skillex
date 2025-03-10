@@ -25,13 +25,13 @@ class ItemStoreGetService {
    */
 
   /**
-   * @param {import('mysql2/promise').Connection} connection
+   * @param {import("mysql2/promise").Connection} connection
    * @param {number} itemId
    * @returns {Promise<GetItemResult[]>}
    */
   async getItemQueryById(connection, itemId) {
     const [result] = await connection.query(
-      'SELECT * FROM items WHERE id = ?',
+      "SELECT * FROM items WHERE id = ?",
       [itemId]
     );
   
@@ -52,22 +52,22 @@ class ItemStoreGetService {
   async getItemByPrefixAndTypeId(connection, options) {
     const { prefix, typeId } = options;
 
-    let query = 'SELECT * FROM items';
+    let query = "SELECT * FROM items";
     const conditions = [];
     const values = [];
   
     if (prefix !== undefined) {
-      conditions.push('prefix = ?');
+      conditions.push("prefix = ?");
       values.push(prefix);
     }
   
     if (typeId !== undefined) {
-      conditions.push('type_id = ?');
+      conditions.push("type_id = ?");
       values.push(typeId);
     }
   
     if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
+      query += " WHERE " + conditions.join(" AND ");
     }
 
     const [result] = await connection.query(query, values);
@@ -81,10 +81,10 @@ class ItemStoreGetService {
    */
   async getItemsByInputArrayTypeIds(connection, inputArrayTypeIds) {
     if (inputArrayTypeIds.length > 26) {
-      throw new Error('Too many typeIds. The maximum allowed is 26 (A-Z).');
+      throw new Error("Too many typeIds. The maximum allowed is 26 (A-Z).");
     }
 
-    let query = 'SELECT * FROM items WHERE ';
+    let query = "SELECT * FROM items WHERE ";
     const conditions = [];
     const values = [];
 
@@ -95,7 +95,7 @@ class ItemStoreGetService {
       values.push(prefix, typeId);
     });
 
-    query += conditions.join(' OR ');
+    query += conditions.join(" OR ");
 
     const [result] = await connection.query(query, values);
     return result;

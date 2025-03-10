@@ -1,12 +1,10 @@
 import {
   getConnection,
-} from './connection.js';
+} from "./connection.js";
 
 export async function initializeTables() {
   const connection = await getConnection();
   try {
-    await connection.beginTransaction();
-
     await connection.query(`
       CREATE TABLE IF NOT EXISTS items (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -31,10 +29,8 @@ export async function initializeTables() {
         FOREIGN KEY (combination_id) REFERENCES combinations(id) ON DELETE CASCADE
       );
     `);
-
-    await connection.commit();
-  } catch (err) {
-    await connection.rollback();
-    throw err;
+  } catch (error) {
+    console.error("initializeTables", error);
+    throw new Error("Tables are not fully initialized");
   }
 }

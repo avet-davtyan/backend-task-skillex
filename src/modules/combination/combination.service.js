@@ -8,23 +8,33 @@ import { getConnection } from "../../db/connection.js";
  * 
  * @param {Array<string>} arr 
  * @param {number} index 
- * @param {Array<Array<string>>} combination 
- * @param {number} length 
- * @param {Array<Array<string>>} items 
- * @returns 
+ * @param {Array<Array<string>>} combinationList
+ * @param {Array<Array<string>>} itemList  
+ * @param {number} combinationLength 
  */
-function combine(arr, index, combination, length, items) {
-  if (arr.length === length) {
-    combination.push(arr);
+function combine(arr, index, combinationList, itemList, combinationLength) {
+  if (arr.length === combinationLength) {
+    combinationList.push(arr);
     return;
   }
-
-  for (let i = index; i < items.length; i++) {
-    for (let j = 0; j < items[i].length; j++) {
-      combine([...arr, items[i][j]], i + 1, combination, length, items);
+  for (let i = index; i < itemList.length; i++) {
+    for (let j = 0; j < itemList[i].length; j++) {
+      combine([...arr, itemList[i][j]], i + 1, combinationList, itemList, combinationLength);
     }
   }
 }
+
+/**
+ * @param {Array<Array<string>>} itemList 
+ * @param {number} combinationLength 
+ * @returns {Array<Array<string>>}
+ */
+function generateValidCombinationList(itemList, combinationLength) {
+  const combinationList = [];
+  combine([], 0, combinationList, itemList, combinationLength);
+  return combinationList;
+}
+
 
 class CombinationService {
 
@@ -68,7 +78,7 @@ class CombinationService {
    * @returns {Promise<CombinationInternal>} 
    */
   async generateAndSaveCombination(
-      options,
+    options,
   ) {
     const {
       inputArray,
@@ -78,42 +88,54 @@ class CombinationService {
     const connection = await getConnection();
 
     try {
-      await connection.beginTransaction();
-      const existingItems =
-        await this.itemStoreGetService.getItemsByInputArrayTypeIds(connection, inputArray);
 
-      const combinationGenerationAssets = this.loadGenerateCombinationAssets({
-        existingItems,
-        inputArray,
-      });
+      const existingItems =
+        await this.itemStoreGetService
+          .getItemsByInputArrayTypeIds(
+            connection,
+            inputArray,
+          );
+
+      const combinationGenerationAssets =
+        this.loadCombinationGenerationAssets({
+          existingItems,
+          inputArray,
+        });
 
       const {
         allItems,
         missingItems,
       } = combinationGenerationAssets;
 
-      if (missingItems.length !== 0) {
-        await this.itemStoreCreateService.createItemManyQuery(connection, missingItems);
-      }
-  
-      const combination = [];
-      combine([], 0, combination, length, allItems);
+      const combinationList = generateValidCombinationList(allItems, length);
 
-      const createdCombination = await this.combinationStoreCreateService.createCombinationQuery(connection, {
-        combination,
-      });
-      await this.responseStoreCreateService.createResponseQuery(connection, {
-        requestData: options,
-        combinationId: createdCombination.id,
-      });
+      await connection.beginTransaction();
 
-      await connection.commit();
+      await this.itemStoreCreateService.createItemManyQuery(connection, missingItems);
+      const createdCombinationList =
+        await this.combinationStoreCreateService
+          .createCombinationQuery(
+            connection,
+            {combinationList},
+          )
+      await this.responseStoreCreateService
+        .createResponseQuery(
+          connection,
+          {
+            requestData: inputArray,
+            combinationId: createdCombinationList.id,
+          }
+        );
+      await connection.commit();  
 
-      return createdCombination;
+      return {
+        id: createdCombinationList.insertId,
+        combination: combinationList,
+      };
     } catch (error) {
-      console.error("Error generating combination", error);
       await connection.rollback();
-      throw error;
+      console.error("generateAndSaveCombination", error)
+      throw new Error("Combination generation failed");
     }
   }
 
@@ -141,7 +163,7 @@ class CombinationService {
    * @param {Item[]} options.existingItems
    * @returns {GenerationAssets}
    */
-  loadGenerateCombinationAssets(
+  loadCombinationGenerationAssets(
     options,
   ){
 
@@ -152,16 +174,24 @@ class CombinationService {
 
     const allItems = [];
     const missingItems = [];
+
     for (let i = 0; i < inputArray.length; i++) {
+
       const prefix = String.fromCharCode(65 + i);
       const currentMaxTypeId = inputArray[i];
       const itemGroup = [];
+
       for (let typeId = 1; typeId <= currentMaxTypeId; typeId++) {
-        if (existingItems.find(item => item.type_id === typeId && item.prefix === prefix) === undefined) {
+        if (
+          existingItems.find(
+            item => item.type_id === typeId &&
+            item.prefix === prefix) === undefined
+          ) {
           missingItems.push({ prefix, typeId });
         }
         itemGroup.push(prefix + typeId);
       }
+
       allItems.push(itemGroup);
     }
 

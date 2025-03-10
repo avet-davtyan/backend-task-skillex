@@ -20,17 +20,17 @@ class CombinationStoreCreateService {
 
   /**
    * @typedef {Object} CombinationQueryOptions
-   * @property {string[][]} combination
+   * @property {string[][]} combinationList
    */
 
   /**
    * @typedef {Object} CombinationQueryResult
    * @property {number} id
-   * @property {string[][]} combination
+   * @property {string[][]} combinationList
    */
 
   /**
-   * @param {import('mysql2/promise').Connection} connection
+   * @param {import("mysql2/promise").Connection} connection
    * @param {CombinationQueryOptions} options
    * @returns {Promise<CombinationQueryResult>}
    */
@@ -39,17 +39,17 @@ class CombinationStoreCreateService {
     options,
   ) {
     const {
-      combination,
+      combinationList,
     } = options;
 
     const [result] = await connection.query(
-      'INSERT INTO combinations (combination) VALUES (?)',
-      [JSON.stringify(combination)]
+      "INSERT INTO combinations (combination) VALUES (?)",
+      [JSON.stringify(combinationList)]
     );
 
     return {
       id: result.insertId,
-      combination,
+      combinationList,
     };
   }
 }

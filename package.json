@@ -9,11 +9,14 @@
     "dev": "nodemon src/app.js"
   },
   "dependencies": {
-    "express": "^4.21.2",
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "mysql2": "^3.13.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
     "nodemon": "^3.1.9"
   }
 }

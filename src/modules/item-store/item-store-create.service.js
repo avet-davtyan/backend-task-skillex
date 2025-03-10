@@ -45,7 +45,7 @@ class ItemStoreCreateService {
     } = options;
 
     const [result] = await connection.query(
-      'INSERT INTO items (type_id, prefix) VALUES (?, ?)',
+      "INSERT INTO items (type_id, prefix) VALUES (?, ?)",
       [typeId, prefix]
     );
 
@@ -56,24 +56,23 @@ class ItemStoreCreateService {
     };
   }
 
-  /**
-   * @typedef {Object} CreateItemManyOptions
-   * @property {number} typeId
-   * @property {string} prefix
-   */
 
   /**
-   * @param {import('mysql2/promise').Connection} connection
-   * @param {CreateItemManyOptions[]} optionsArray
+   * @param {import("mysql2/promise").Connection} connection
+   * @param {CreateItemOptions[]} optionsArray
    * @returns {Promise<null>}
    */
   async createItemManyQuery(
     connection,
     optionsArray,
   ) {
+    if(optionsArray.length === 0) {
+      return null;
+    }
+
     const values = optionsArray.map(({ typeId, prefix }) => [typeId, prefix]);
     await connection.query(
-        'INSERT INTO items (type_id, prefix) VALUES ?',
+        "INSERT INTO items (type_id, prefix) VALUES ?",
         [values]
     );
 

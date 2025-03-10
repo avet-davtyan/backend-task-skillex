@@ -37,7 +37,7 @@ class ResponseStoreCreateService {
    */
 
   /**
-   * @param {import('mysql2/promise').Connection} connection
+   * @param {import("mysql2/promise").Connection} connection
    * @param {CreateResponseOptions} options
    * @returns {Promise<ResponseQueryResult>}
    */
@@ -51,7 +51,7 @@ class ResponseStoreCreateService {
     } = options;
 
     const [result] = await connection.query(
-      'INSERT INTO responses (request_data, combination_id) VALUES (?, ?)',
+      "INSERT INTO responses (request_data, combination_id) VALUES (?, ?)",
       [JSON.stringify(requestData), combinationId]
     );
 
